@@ -142,24 +142,37 @@ int fitsInSchedule(node * classes, course * sect, cohortReq * coh, node * cohReq
 }
 
 int writeSchedule(node * cohortList, FILE * outFile){
+	int score = rankSchedule(cohortList);
+	if(score >= MAX_SCORE && MAX_SCORE != -1){
+		return 0;
+	}
+	char * schedString = malloc(16384 * sizeof(char));
+	schedString[0] = '\0';
+	char * intermediateString = malloc(512 * sizeof(char));
+	intermediateString[0] = '\0';
 	static long int counter = 0;
 	node * classes;
-	//fprintf(outFile, "\nSchedule:\n");
+	strcat(schedString, "Schedule:\n");
 	cohortSchedule * curCo;
 	course * curCl;
 	while(cohortList){
 		curCo = ((cohortSchedule *) cohortList->data);
-		//fprintf(outFile, "Cohort: %s\n", curCo->co->name);
-		//fprintf(outFile, "Classes: \n");
+		sprintf(intermediateString, "Cohort: %s\n", curCo->co->name);
+		strcat(schedString,intermediateString);
+		intermediateString[0] = '\0';
+		strcat(schedString, "Classes: \n");
 		classes = curCo->classes;
 		while(curCo->classes){
 			curCl = curCo->classes->data;
-			//fprintf(outFile, "%s, %d, %s, %d - %d, %c\n", curCl->name, curCl->section, curCl->days, curCl->startTime, curCl->endTime, curCl->campus);
+			sprintf(intermediateString, "%s, %d, %s, %d - %d, %c\n", curCl->name, curCl->section, curCl->days, curCl->startTime, curCl->endTime, curCl->campus);
+			strcat(schedString, intermediateString);
+			intermediateString[0] = '\0';
 			curCo->classes = curCo->classes->next;
 		}
 		curCo->classes = classes;
 		cohortList = cohortList->next;
 	}
+	addSchedule(schedString,score);
 	counter++;
 	if(counter % 10 == 0){
 		printf("found %ld valid schedules\n",counter);
@@ -203,10 +216,11 @@ int tryCombination(node * classList, node * cohortList, FILE * outFile, node * a
 		coh = NULL;
 	}
 	//either next one in or back up based on fit
-	if(fit && (cohortList->next == NULL)){
+	rankSchedule(assigned)
+	if(fit && (cohortList->next == NULL) &&){
 		writeSchedule(assigned, outFile);
 	}
-	else if(fit){
+	else if(fit && rankSchedule(assigned) < MAX_SCORE){
 		findCombosForHeadCohort(classList,cohortList->next,outFile,assigned);
 	}
 	node * tf;
@@ -239,5 +253,33 @@ int arePair(char * name1, cohortReq * coh, node * cohortReqs){
 		return 0;
 	}else{
 		return 1;
+	}
+}
+
+int addSchedule(char * string, int score){
+	node * cur = BEST_SCHEDULES;
+	completeSchedule * toAdd = malloc(sizeof(completeSchedule));
+	toAdd->schedule = string;
+	toAdd->score = score;
+	node * addNode = malloc(sizeof(node));
+	addNode->data = toAdd;
+	if(BEST_SCHEDULES == NULL){
+		addNode->next = BEST_SCHEDULES;
+		BEST_SCHEDULES = addNode;
+	}else{
+		while(cur->next && ((completeSchedule *)cur->next->data)->score < score){
+			cur = cur->next;
+		}
+		addNode->next = cur->next;
+		cur->next = addNode;
+		if(SCHEDULE_CT > 19){
+			node * tf = BEST_SCHEDULES;
+			BEST_SCHEDULES = BEST_SCHEDULES->next;
+			free(((completeSchedule *)tf->data)->schedule);
+			free(((completeSchedule *)tf->data));
+			free(tf);
+		}else{
+			SCHEDULE_CT++;
+		}
 	}
 }

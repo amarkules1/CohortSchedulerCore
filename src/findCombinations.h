@@ -8,6 +8,17 @@ typedef struct _cohortSchedule{
 	node * classes;
 } cohortSchedule;
 
+typedef struct _completeSchedule{
+	char * schedule;
+	int score;
+} completeSchedule;
+
+node * BEST_SCHEDULES;
+
+int SCHEDULE_CT;
+
+int MAX_SCORE;
+
 void findAll(node * classList, node * cohortList, char * out);
 
 int findCombosForHeadCohort(node * classList, node * cohortList, FILE * outFile, node * assigned);
