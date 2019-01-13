@@ -14,6 +14,7 @@ void findAll(node * classList, node * cohortList, char * out){
 	FILE * outFile = fopen(out, "w");
 	findCombosForHeadCohort(classList, cohortList, outFile, NULL);
 	fclose(outFile);
+	initRankFunctions();
 }
 
 int findCombosForHeadCohort(node * classList, node * cohortList, FILE * outFile, node * assigned){
@@ -142,15 +143,16 @@ int fitsInSchedule(node * classes, course * sect, cohortReq * coh, node * cohReq
 }
 
 int writeSchedule(node * cohortList, FILE * outFile){
-	int score = rankSchedule(cohortList);
+	int score = rankSchedules(cohortList);
 	if(score >= MAX_SCORE && MAX_SCORE != -1){
 		return 0;
 	}
 	char * schedString = malloc(16384 * sizeof(char));
 	schedString[0] = '\0';
 	char * intermediateString = malloc(512 * sizeof(char));
-	intermediateString[0] = '\0';
+	intermediateString[0] = '\0';*/
 	static long int counter = 0;
+	
 	node * classes;
 	strcat(schedString, "Schedule:\n");
 	cohortSchedule * curCo;
@@ -172,7 +174,7 @@ int writeSchedule(node * cohortList, FILE * outFile){
 		curCo->classes = classes;
 		cohortList = cohortList->next;
 	}
-	addSchedule(schedString,score);
+	addSchedule(schedString,score);*/
 	counter++;
 	if(counter % 10 == 0){
 		printf("found %ld valid schedules\n",counter);
@@ -216,11 +218,12 @@ int tryCombination(node * classList, node * cohortList, FILE * outFile, node * a
 		coh = NULL;
 	}
 	//either next one in or back up based on fit
-	rankSchedule(assigned)
+	//rankSchedules(assigned)
 	if(fit && (cohortList->next == NULL) &&){
 		writeSchedule(assigned, outFile);
 	}
-	else if(fit && rankSchedule(assigned) < MAX_SCORE){
+	else if(fit && (rankSchedules(assigned) < MAX_SCORE || MAX_SCORE == 0)){
+	//else if(fit){
 		findCombosForHeadCohort(classList,cohortList->next,outFile,assigned);
 	}
 	node * tf;
