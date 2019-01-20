@@ -4,11 +4,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 typedef struct _cohortReq{
 	char * name;
 	char * classReq;
 	int nbrOfSeats;
+	char * sectionCode;
 } cohortReq;
 
 typedef struct _cohort{

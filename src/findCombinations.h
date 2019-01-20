@@ -41,4 +41,6 @@ int arePair(char * name1, cohortReq * coh, node * cohortReqs);
 
 int addSchedule(char * string, int score);
 
+node * getOnlyValidReqs(node * offerings, node * requirements);
+
 #endif

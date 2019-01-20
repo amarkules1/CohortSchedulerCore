@@ -35,6 +35,7 @@ int findCombosForHeadCohort(node * classList, node * cohortList, FILE * outFile,
 
 int pickClass(node * classList, node * cohortList, FILE * outFile, node * assigned, node * needed){
 	node * offerings = ((clas *) needed->data)->offerings;
+	offerings = getOnlyValidReqs(offerings, ((cohortSchedule *)assigned->data)->co->cohortReqs);
 	while(offerings){
 		((cohortSchedule *)assigned->data)->classes = addNode(offerings->data, ((cohortSchedule *)assigned->data)->classes);
 		if(needed->next){
@@ -44,6 +45,8 @@ int pickClass(node * classList, node * cohortList, FILE * outFile, node * assign
 		}
 		node * tf = ((cohortSchedule *)assigned->data)->classes;
 		((cohortSchedule *)assigned->data)->classes = ((cohortSchedule *)assigned->data)->classes->next;
+		free(tf);
+		tf = offerings;
 		offerings = offerings->next;
 		free(tf);
 	}
@@ -150,7 +153,7 @@ int writeSchedule(node * cohortList, FILE * outFile){
 	char * schedString = malloc(16384 * sizeof(char));
 	schedString[0] = '\0';
 	char * intermediateString = malloc(512 * sizeof(char));
-	intermediateString[0] = '\0';*/
+	intermediateString[0] = '\0';
 	static long int counter = 0;
 	
 	node * classes;
@@ -285,4 +288,34 @@ int addSchedule(char * string, int score){
 			SCHEDULE_CT++;
 		}
 	}
+}
+
+node * getOnlyValidReqs(node * offerings, node * requirements){
+	node * results = NULL;
+	node * reqs = requirements;
+	char * sectionCode = malloc(10 * sizeof(char));
+	while(reqs){
+		if(strcmp(((cohortReq *)reqs->data)->classReq, ((course *)offerings->data)->name)==0){
+			strcpy(sectionCode, ((cohortReq *)reqs->data)->sectionCode);
+		}
+		reqs = reqs->next;
+	}
+	node * curOff = offerings;
+	char * offSection = malloc(10 * sizeof(char));
+	int goodSection = 0;
+	while(curOff){
+		strcpy(offSection, ((course *)curOff->data)->section);
+		for(int i = 0; i < strlen(sectionCode);i++){
+			if(sectionCode[i]==offSection[i]){
+				goodSection = 1;
+			}else{
+				goodSection = 0;
+			}
+		}
+		if(goodSection){
+			results = addNode(curOff->data, results);
+			goodSection = 0;
+		}
+	}
+	return results;
 }

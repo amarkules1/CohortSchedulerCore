@@ -57,6 +57,13 @@ cohortReq * addField(int index, char * value, cohortReq * obj){
 		strcpy(obj->classReq, value);
 	}else if(index == 2){
 		obj->nbrOfSeats = atoi(value);
+	}else if(index == 3){
+		if(strlen(value) > 0 && isalpha(value[0])){
+			obj->sectionCode = malloc(5*sizeof(char));
+			strcpy(obj->sectionCode, value);
+		}else{
+			obj->sectionCode = NULL;
+		}
 	}
 	return obj;
 }
