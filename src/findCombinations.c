@@ -144,17 +144,17 @@ int fitsInSchedule(node * classes, course * sect, cohortReq * coh, node * cohReq
 int writeSchedule(node * cohortList, FILE * outFile){
 	static long int counter = 0;
 	node * classes;
-	//fprintf(outFile, "\nSchedule:\n");
+	fprintf(outFile, "\nSchedule:\n");
 	cohortSchedule * curCo;
 	course * curCl;
 	while(cohortList){
 		curCo = ((cohortSchedule *) cohortList->data);
-		//fprintf(outFile, "Cohort: %s\n", curCo->co->name);
-		//fprintf(outFile, "Classes: \n");
+		fprintf(outFile, "Cohort: %s\n", curCo->co->name);
+		fprintf(outFile, "Classes: \n");
 		classes = curCo->classes;
 		while(curCo->classes){
 			curCl = curCo->classes->data;
-			//fprintf(outFile, "%s, %d, %s, %d - %d, %c\n", curCl->name, curCl->section, curCl->days, curCl->startTime, curCl->endTime, curCl->campus);
+			fprintf(outFile, "%s, %d, %s, %d - %d, %c\n", curCl->name, curCl->section, curCl->days, curCl->startTime, curCl->endTime, curCl->campus);
 			curCo->classes = curCo->classes->next;
 		}
 		curCo->classes = classes;
